@@ -57,7 +57,6 @@ pi = float(3.1416)
 def calcular_area_circulo(radio):
     area = pi * (int(radio) * int(radio))
     print(f"El área de su círculo es de {area} cm")
-    return(area)
 
 def  calcular_perimetro_circulo(radio):
     perimetro = 2 * pi * int(radio)
@@ -149,7 +148,6 @@ print("-" * 60)
 def calcular_imc(peso, altura):
     masa_corporal = float(peso) / (float(altura) * float(altura))
     print(f"El resultado de tu IMC es: {masa_corporal}")
-    return masa_corporal
 
 peso = input("Ingrese su peso: ")
 
@@ -186,7 +184,7 @@ print("Actividad 10")
 print("-" * 60)
 
 def calcular_promedio(a, b, c):
-    promedio = int(a) + int(b) + int(c) / 3
+    promedio = (int(a) + int(b) + int(c)) / 3
     print(f"El promedio de los números es {promedio}")
 
 print("introduzca 3 números")
