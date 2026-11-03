@@ -11,27 +11,20 @@ from flask import Flask, jsonify, request
 import repositorio as repo
 
 app = Flask(__name__)
-app.json.ensure_ascii = False   # para que las tildes se vean bien en el JSON
+app.json.ensure_ascii = False
 
 repo.inicializar_bd()
 
-
-# ----------------------------------------------------------------------
-# Funciones auxiliares de validación
-# ----------------------------------------------------------------------
 def error(mensaje, codigo):
     """Devuelve una respuesta de error en formato JSON."""
     return jsonify({"error": mensaje}), codigo
-
 
 def es_entero(valor):
     """True si es un int (en Python, bool también es int, así que lo excluyo)."""
     return isinstance(valor, int) and not isinstance(valor, bool)
 
-
 def es_texto_valido(valor):
     return isinstance(valor, str) and valor.strip() != ""
-
 
 def leer_json():
     """Devuelve el cuerpo JSON como diccionario, o None si es inválido."""
@@ -40,14 +33,9 @@ def leer_json():
         return None
     return datos
 
-
-# ----------------------------------------------------------------------
-# AUTORES
-# ----------------------------------------------------------------------
 @app.route("/api/autores", methods=["GET"])
 def listar_autores():
     return jsonify(repo.obtener_autores_db()), 200
-
 
 @app.route("/api/autores", methods=["POST"])
 def crear_autor():
@@ -65,14 +53,9 @@ def crear_autor():
     nuevo_id = repo.insertar_autor_db(datos["nombre"].strip(), datos["nacionalidad"].strip())
     return jsonify(repo.obtener_autor_db(nuevo_id)), 201
 
-
-# ----------------------------------------------------------------------
-# LIBROS
-# ----------------------------------------------------------------------
 @app.route("/api/libros", methods=["GET"])
 def listar_libros():
     return jsonify(repo.obtener_libros_db()), 200
-
 
 @app.route("/api/libros/<int:id>", methods=["GET"])
 def obtener_libro(id):
@@ -80,7 +63,6 @@ def obtener_libro(id):
     if libro is None:
         return error(f"No existe un libro con id {id}.", 404)
     return jsonify(libro), 200
-
 
 @app.route("/api/libros", methods=["POST"])
 def crear_libro():
@@ -104,7 +86,6 @@ def crear_libro():
 
     nuevo_id = repo.insertar_libro_db(datos["titulo"].strip(), datos["anio"], datos["autor_id"])
     return jsonify(repo.obtener_libro_db(nuevo_id)), 201
-
 
 @app.route("/api/libros/<int:id>", methods=["PUT"])
 def actualizar_libro(id):
@@ -145,31 +126,23 @@ def actualizar_libro(id):
     repo.actualizar_libro_db(id, titulo, anio, autor_id)
     return jsonify(repo.obtener_libro_db(id)), 200
 
-
 @app.route("/api/libros/<int:id>", methods=["DELETE"])
 def eliminar_libro(id):
     if not repo.eliminar_libro_db(id):
         return error(f"No existe un libro con id {id}.", 404)
     return jsonify({"mensaje": f"Libro {id} eliminado correctamente."}), 200
 
-
-# ----------------------------------------------------------------------
-# Manejo global de errores (siempre responden JSON, nunca HTML)
-# ----------------------------------------------------------------------
 @app.errorhandler(404)
 def no_encontrado(e):
     return error("Recurso no encontrado.", 404)
-
 
 @app.errorhandler(405)
 def metodo_no_permitido(e):
     return error("Método HTTP no permitido para esta ruta.", 405)
 
-
 @app.errorhandler(500)
 def error_interno(e):
     return error("Error interno del servidor.", 500)
-
 
 if __name__ == "__main__":
     app.run(debug=True)

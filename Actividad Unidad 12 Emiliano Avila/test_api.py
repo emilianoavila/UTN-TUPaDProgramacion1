@@ -1,29 +1,17 @@
-"""
-Script de prueba automática de la API (usa la librería requests).
-
-Pasos:
-  1) Abrir una terminal y ejecutar:   python app.py
-  2) En OTRA terminal ejecutar:       python test_api.py
-"""
-
 import requests
 
 BASE_URL = "http://127.0.0.1:5000/api"
-
 
 def mostrar(titulo, respuesta):
     print(f"\n--- {titulo} ---")
     print("Código:", respuesta.status_code)
     print("Respuesta:", respuesta.json())
 
-
 def main():
-    # 1) GET /api/libros
     r = requests.get(f"{BASE_URL}/libros", timeout=5)
     mostrar("1) GET /api/libros", r)
     assert r.status_code == 200
 
-    # 2) POST autor y luego libro
     r = requests.post(
         f"{BASE_URL}/autores",
         json={"nombre": "Julio Cortázar", "nacionalidad": "Argentina"},
@@ -42,7 +30,6 @@ def main():
     assert r.status_code == 201
     libro_id = r.json()["id"]
 
-    # 3) PUT: actualizar el título del libro recién creado
     r = requests.put(
         f"{BASE_URL}/libros/{libro_id}",
         json={"titulo": "Rayuela (Edición especial)"},
@@ -67,7 +54,6 @@ def main():
     assert r.status_code == 400
 
     print("\n✔ Todas las pruebas pasaron correctamente.")
-
 
 if __name__ == "__main__":
     try:

@@ -1,22 +1,14 @@
-"""
-Repositorio: funciones que ejecutan las sentencias SQL sobre biblioteca.db
-(Ejercicio 1 del TP de API REST). Reutiliza la estructura del TP de Acceso a Datos.
-"""
-
 import os
 import sqlite3
 
-# La base se guarda al lado de este archivo, sin importar desde dónde se ejecute
 CARPETA = os.path.dirname(os.path.abspath(__file__))
 NOMBRE_DB = os.path.join(CARPETA, "biblioteca.db")
 
-
 def conectar():
     conexion = sqlite3.connect(NOMBRE_DB)
-    conexion.row_factory = sqlite3.Row      # permite acceder a columnas por nombre
+    conexion.row_factory = sqlite3.Row
     conexion.execute("PRAGMA foreign_keys = ON")
     return conexion
-
 
 def inicializar_bd():
     """Crea las tablas si no existen (misma estructura que el TP anterior)."""
@@ -42,8 +34,6 @@ def inicializar_bd():
     finally:
         conexion.close()
 
-
-# ------------------------------ AUTORES ------------------------------
 def obtener_autores_db():
     conexion = conectar()
     try:
@@ -51,7 +41,6 @@ def obtener_autores_db():
         return [dict(fila) for fila in filas]
     finally:
         conexion.close()
-
 
 def obtener_autor_db(id):
     conexion = conectar()
@@ -62,7 +51,6 @@ def obtener_autor_db(id):
         return dict(fila) if fila else None
     finally:
         conexion.close()
-
 
 def insertar_autor_db(nombre, nacionalidad):
     """Inserta un autor y devuelve el ID generado."""
@@ -77,8 +65,6 @@ def insertar_autor_db(nombre, nacionalidad):
     finally:
         conexion.close()
 
-
-# ------------------------------ LIBROS -------------------------------
 CONSULTA_LIBROS = """
     SELECT libros.id, libros.titulo, libros.anio, libros.autor_id,
            autores.nombre AS autor_nombre,
@@ -86,7 +72,6 @@ CONSULTA_LIBROS = """
     FROM libros
     JOIN autores ON libros.autor_id = autores.id
 """
-
 
 def _armar_libro(fila):
     """Convierte una fila del JOIN en un diccionario con el autor anidado."""
@@ -101,7 +86,6 @@ def _armar_libro(fila):
         },
     }
 
-
 def obtener_libros_db():
     conexion = conectar()
     try:
@@ -110,7 +94,6 @@ def obtener_libros_db():
     finally:
         conexion.close()
 
-
 def obtener_libro_db(id):
     conexion = conectar()
     try:
@@ -118,7 +101,6 @@ def obtener_libro_db(id):
         return _armar_libro(fila) if fila else None
     finally:
         conexion.close()
-
 
 def insertar_libro_db(titulo, anio, autor_id):
     """Inserta un libro y devuelve su ID."""
@@ -133,7 +115,6 @@ def insertar_libro_db(titulo, anio, autor_id):
     finally:
         conexion.close()
 
-
 def actualizar_libro_db(id, titulo, anio, autor_id):
     """Actualiza un libro. Devuelve True si existía, False si no."""
     conexion = conectar()
@@ -146,7 +127,6 @@ def actualizar_libro_db(id, titulo, anio, autor_id):
         return cursor.rowcount > 0
     finally:
         conexion.close()
-
 
 def eliminar_libro_db(id):
     """Elimina un libro. Devuelve True si existía, False si no."""
